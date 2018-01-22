@@ -26,6 +26,9 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  mounted(){
+    this.$d3.selectAll('h1').style('font-size', '10px');
   }
 }
 </script>
