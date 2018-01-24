@@ -1,9 +1,9 @@
 // Find the immigration total figures per year, based on large regions
 
 import ParseCSV from "./parseCSV";
-import admissionsTotal from './assets/datasets/admissions_total.csv';
+import admissionsTotal from './assets/datasets/refused_by_country.csv';
 
-export default class PerYear {
+export default class Refused {
 
   constructor(d3) {
 
@@ -71,7 +71,6 @@ export default class PerYear {
         "x": 150 * (j + 1),
         "y": 150,
         "r": regionTotals[j].total,
-        "name": regionTotals[j].name,
         "label": regionTotals[j].name + '\n' + regionTotals[j].total.toString()
       });
     }
@@ -100,10 +99,7 @@ export default class PerYear {
         return d.r
       })
       .attr("stroke", "black")
-      .attr('fill', 'white')
-      .on('click', (d) => {
-        document.dispatchEvent(new CustomEvent('region_clicked', {detail: {'name': d.name}}));
-      });
+      .attr('fill', 'white');
 
     elemEnter.append('text')
       .attr('dx', function (d) {
