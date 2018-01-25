@@ -1,47 +1,54 @@
-// Find the immigration total figures per year, based on large regions
+/**
+ * Compute and display nodes for global region based immigration statistics using D3 Js
+ */
 
 import ParseCSV from "./parseCSV";
 import admissionsTotal from './assets/datasets/admissions_total.csv';
 
-export default class PerYear {
+export default class GlobalStatisticsD3 {
 
+  /**
+   * Construct a new global statistics instance
+   * @param d3 - the d3 JS instance to use
+   */
   constructor(d3) {
 
     this.d3 = d3;
     this.csvData = this._getCSVData();
+    this.year = 2007;
+    this.quarter = null;
   }
 
   _getCSVData() {
 
     return new Promise((resolve) => {
 
-      ParseCSV.parseCSV(admissionsTotal)
-        .then(({headers, data}) => {
+      ParseCSV.parseCSV(admissionsTotal).then(({headers, data}) => {
 
-          this.headers = headers;
-          this.data = data;
-
-          resolve()
-        });
+        this.headers = headers;
+        this.data = data;
+        resolve();
+      });
     });
   }
 
   /**
-   * Show the data for one year for global immigration figures
-   * @param year
+   * Wrapper to compute and display nodes from current CSV data and time values
    */
-  showYear(year) {
+  showNodes() {
 
     this.csvData.then(() => {
 
       // There are four global regions we are interested in
 
-      const jsonCircles = this._computeNodes(year);
-      this._displayNodes(jsonCircles);
+      const nodes = this._computeNodes();
+      this._displayNodes(nodes);
     });
   }
 
-  _computeNodes(year) {
+  _computeNodes() {
+
+    // There are 4 regions available in total, each with their own name and total immigration figures
 
     const regionTotals = [
       {name: this.headers[2], total: 0},
@@ -50,24 +57,30 @@ export default class PerYear {
       {name: this.headers[5], total: 0}
     ];
 
-    const jsonCircles = [];
+    const nodes = [];
 
-    // Each year has 4 quartiles, and the first year starts at index 0 (first year is 2007)
+    // The first year is 2007 and has 4 quartiles
 
-    const startIndex = (year - 2007) * 4;
+    let startIndex = (this.year - 2007) * 4;
 
-    for (let i = startIndex; i < startIndex + 4; i++) {
+    if (this.quarter) {
+
+      startIndex += this.quarter - 1;
+    }
+
+    const endIndex = this.quarter ? startIndex + 1 : startIndex + 4;
+
+    for (let i = startIndex; i < endIndex; i++) {
 
       for (let j = 0; j < 4; j++) {
 
-        regionTotals[j].total += parseFloat(this.data[i][j + 2]);
-        regionTotals[j].total = Number((regionTotals[j].total).toFixed(2));
+        regionTotals[j].total += Number(parseFloat(this.data[i][j + 2]).toFixed(2));
       }
     }
 
     for (let j = 0; j < 4; j++) {
 
-      jsonCircles.push({
+      nodes.push({
         "x": 150 * (j + 1),
         "y": 150,
         "r": regionTotals[j].total,
@@ -76,10 +89,10 @@ export default class PerYear {
       });
     }
 
-    return jsonCircles;
+    return nodes;
   }
 
-  _displayNodes(jsonCircles) {
+  _displayNodes(nodes) {
 
     this.d3.selectAll("svg > *").remove();
 
@@ -87,7 +100,7 @@ export default class PerYear {
       .attr("width", 1600)
       .attr("height", 500);
 
-    const elem = svgContainer.selectAll("g").data(jsonCircles);
+    const elem = svgContainer.selectAll("g").data(nodes);
 
     const elemEnter = elem.enter()
       .append('g')

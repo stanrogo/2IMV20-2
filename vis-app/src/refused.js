@@ -82,31 +82,76 @@ export default class Refused {
 
     this.d3.selectAll("svg > *").remove();
 
+    var margin = {top: 20, right: 20, bottom: 70, left: 40},
+      width = 600 - margin.left - margin.right,
+      height = 300 - margin.top - margin.bottom;
+
+// Parse the date / time
+    var parseDate = d3.time.format("%Y-%m").parse;
+
+    var x = this.d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+    var y = this.d3.scale.linear().range([height, 0]);
+
+    var xAxis = this.d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickFormat(this.d3.time.format("%Y-%m"));
+
+    var yAxis = this.d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .ticks(10);
+
     const svgContainer = this.d3.select("#D3Container")
       .attr("width", 1600)
       .attr("height", 500);
 
-    const elem = svgContainer.selectAll("g").data(jsonCircles);
+    data.forEach(function (d) {
+      d.date = parseDate(d.date);
+      d.value = +d.value;
+    });
 
-    const elemEnter = elem.enter()
-      .append('g')
-      .attr("transform", function (d) {
-        return 'translate(' + d.x + ',' + d.y + ')'
-      });
+    x.domain(data.map(function (d) {
+      return d.date;
+    }));
+    y.domain([0, this.d3.max(data, function (d) {
+      return d.value;
+    })]);
 
-    const circle = elemEnter.append("circle")
-      .attr('r', function (d) {
-        return d.r
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)");
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Value ($)");
+
+    svg.selectAll("bar")
+      .data(data)
+      .enter().append("rect")
+      .style("fill", "steelblue")
+      .attr("x", function (d) {
+        return x(d.date);
       })
-      .attr("stroke", "black")
-      .attr('fill', 'white');
-
-    elemEnter.append('text')
-      .attr('dx', function (d) {
-        return -50
+      .attr("width", x.rangeBand())
+      .attr("y", function (d) {
+        return y(d.value);
       })
-      .text(function (d) {
-        return d.label
+      .attr("height", function (d) {
+        return height - y(d.value);
       });
   }
 }

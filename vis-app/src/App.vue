@@ -41,7 +41,10 @@
       <v-toolbar-title v-text="title"/>
     </v-toolbar>
     <v-content>
-      <router-view/>
+      <v-container fluid>
+        <router-view/>
+        <range-slider/>
+      </v-container>
     </v-content>
     <v-footer :fixed="fixed" app>
       <span>&copy; 2017</span>
@@ -51,9 +54,10 @@
 
 <script>
 
-
+  import RangeSlider from "./components/RangeSlider";
 
   export default {
+    components: {RangeSlider},
     name: 'app',
     data() {
       return {

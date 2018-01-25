@@ -1,8 +1,10 @@
 import Vue from 'vue'
-import App from './App.vue'
 import VueD3 from 'vue-d3'
 import Vuetify from 'vuetify'
+
+import App from './App.vue'
 import router from './router'
+import store from './store'
 
 import '../node_modules/vuetify/dist/vuetify.min.css';
 
@@ -12,6 +14,7 @@ Vue.use(VueD3);
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  store,
+  components: {App},
   template: '<App/>'
 });
