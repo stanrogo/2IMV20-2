@@ -18,7 +18,8 @@ const store = new Vuex.Store({
       'EEA Nationals',
       'British Citizens',
       'Other EEA and Swiss Nationals'
-    ]
+    ],
+    currentTotalImmigration: 0,
   },
   mutations: {
     change_year(state, payLoad = state.fullYear) {
@@ -47,6 +48,10 @@ const store = new Vuex.Store({
     set_quarter_active(state, payLoad) {
       state.quarterActive = payLoad;
       store.commit('change_year');
+    },
+    set_region(state, payLoad){
+      state.selectedRegion = state.availableRegions.indexOf(payLoad);
+      console.log(state.selectedRegion);
     }
   }
 });

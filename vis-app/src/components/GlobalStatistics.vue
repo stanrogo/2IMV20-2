@@ -80,8 +80,6 @@
         (state) => state.timeChanged,
         () => this.updateDisplay()
       );
-    },
-    mounted() {
       this.updateDisplay();
     }
   }

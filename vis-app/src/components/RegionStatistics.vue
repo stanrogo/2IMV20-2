@@ -1,31 +1,53 @@
 <template>
     <v-card>
-      <h1>Total = {{totalImmigration}}</h1>
+      <h1>{{immigrationTotal}} million {{regionName}} entered the UK in {{this.year}}</h1>
+      <h2>Where exactly did they come from and what are they here for?</h2>
       <svg id="D3Container"></svg>
     </v-card>
 </template>
 
 <script>
 
-  import RegionStatisticsD3 from '../regionStatisticsD3';
+  import ParseCSV from "../parseCSV";
+  import admissionsTotal from '../assets/datasets/admissions_total.csv';
+  import refusedTotal from '../assets/datasets/refused_by_country.csv';
 
   export default {
     name: "region-statistics",
-    data: function(){
+    data () {
       return {
-        totalImmigration: 0
+        nodes: [],
+        regionName: this.$route.params.name,
+        immigrationTotal: 0,
       }
     },
     methods: {
-      updateDisplay() {
-        this.globalStatisticsD3.year = this.year;
-        this.globalStatisticsD3.quarter = this.quarter;
-        this.totalImmigration = this.globalStatisticsD3._getTotalImmigration();
-      }
+      computeImmigrationTotal(){
+        ParseCSV.parseCSV(admissionsTotal).then(({headers, data}) => {
+
+          let regionTotal = 0;
+
+          for (let i = this.startIndex; i < this.endIndex; i++) {
+
+            regionTotal += Number(parseFloat(data[i][this.selectedRegion + 2]).toFixed(2));
+          }
+
+          this.immigrationTotal = regionTotal;
+        });
+      },
     },
     computed: {
-      totalImmigration: function(){
-        return 0;
+      regions: function () {
+        return this.$store.state.availableRegions;
+      },
+      selectedRegion: function(){
+        return this.$store.state.selectedRegion;
+      },
+      startIndex: function () {
+        return this.$store.state.startIndex;
+      },
+      endIndex: function () {
+        return this.$store.state.endIndex;
       },
       year: function () {
         return parseInt(this.$store.state.year);
@@ -38,18 +60,13 @@
       },
     },
     created() {
+      this.$store.commit('set_region', this.regionName);
+      this.computeImmigrationTotal();
+
       this.$store.watch(
-        () => this.$store.state.year,
-        () => this.updateDisplay()
+        (state) => state.timeChanged,
+        () => this.computeImmigrationTotal()
       );
-      this.$store.watch(
-        () => this.$store.state.quarterActive,
-        () => this.updateDisplay()
-      );
-    },
-    mounted() {
-      this.globalStatisticsD3 = new RegionStatisticsD3(this.$d3, 'EEA Nationals');
-      this.updateDisplay();
     }
   }
 </script>
