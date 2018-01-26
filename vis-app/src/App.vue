@@ -17,14 +17,11 @@
       <v-toolbar-title v-text="title"/>
     </v-toolbar>
     <v-content>
-      <v-container fluid>
+      <v-container fluid grid-list-md>
         <router-view/>
         <range-slider/>
       </v-container>
     </v-content>
-    <v-footer app>
-      <span>&copy; 2017</span>
-    </v-footer>
   </v-app>
 </template>
 

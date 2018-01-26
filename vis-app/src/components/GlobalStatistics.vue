@@ -59,12 +59,6 @@
       }
     },
     computed: {
-      year: function () {
-        return this.$store.state.year;
-      },
-      quarter: function () {
-        return this.$store.state.quarter;
-      },
       regions: function () {
         return this.$store.state.availableRegions;
       },

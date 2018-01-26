@@ -51,7 +51,6 @@ const store = new Vuex.Store({
     },
     set_region(state, payLoad){
       state.selectedRegion = state.availableRegions.indexOf(payLoad);
-      console.log(state.selectedRegion);
     }
   }
 });
