@@ -3,7 +3,7 @@
     <v-card-text>
       <v-btn flat :color="yearColor" v-on:click="quarterActive = false">Per Year</v-btn>
       <v-btn flat :color="quarterColor" v-on:click="quarterActive = true">Per Quarter</v-btn>
-      <v-slider :label="sliderLabel" v-model="year" thumb-label :step="sliderSteps" min="2007" max="2016" ticks/>
+      <v-slider :label="sliderLabel" v-model="fullYear" thumb-label :step="sliderSteps" min="2007" max="2016" ticks/>
     </v-card-text>
   </v-card>
 </template>
@@ -15,9 +15,15 @@
   export default {
     name: "range-slider",
     computed: {
-      year: {
+      year: function () {
+        return this.$store.state.year;
+      },
+      quarter: function () {
+        return this.$store.state.quarter;
+      },
+      fullYear: {
         get() {
-          return this.$store.state.year
+          return this.$store.state.fullYear
         },
         set(newYear) {
           this.$store.commit('change_year', newYear);
@@ -41,14 +47,7 @@
         return this.quarterActive ? "" : "primary"
       },
       sliderLabel() {
-
-        if(this.quarterActive){
-          const year = parseInt(this.year);
-          const quarter = (Number((this.year % 1).toFixed(2)) + 0.25) * 4;
-          return `${year}, quarter ${quarter}`;
-        }
-
-        return `${this.year}`;
+        return this.quarterActive ? `${this.year}, quarter ${this.quarter}` : `${this.year}`;
       }
     }
   }
