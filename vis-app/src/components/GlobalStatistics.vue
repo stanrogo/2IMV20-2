@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap>
-    <v-flex xs12 >
+    <v-flex xs12>
       <v-card dark color="primary">
         <v-card-title>
           <h1 class="headline">Immigration figures to the UK per year</h1>
@@ -10,14 +10,20 @@
     </v-flex>
     <v-flex xs12>
       <v-card>
-        <v-btn flat :color="showInflow && !showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(false, true)">Show Inflow Only</v-btn>
-        <v-btn flat :color="showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, true)">Show Both</v-btn>
-        <v-btn flat :color="!showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, false)">Show Outflow Only</v-btn>
+        <v-btn flat :color="showInflow && !showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(false, true)">Show
+          Inflow Only
+        </v-btn>
+        <v-btn flat :color="showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, true)">Show
+          Both
+        </v-btn>
+        <v-btn flat :color="!showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, false)">Show
+          Outflow Only
+        </v-btn>
 
         <svg id="D3Container" width="100%" height="600">
           <g v-for="(d, i) in nodes" :transform="'translate(' + d.x + ',' + d.y + ')'" class="data-group">
             <circle :r="d.r" :fill="d.color" v-on:click="goToRegion(d.name)"></circle>
-            <text text-anchor="middle" fill="#212121" :transform="'translate(' + 0 + ',' + 4 + ')'">{{d.r}}K</text>
+            <text text-anchor="middle" fill="#ffffff" :transform="'translate(' + 0 + ',' + (d.r * -1 + 20) + ')'">{{d.r}}K</text>
             <text text-anchor="middle" :transform="'translate(' + 0 + ',' + d.y + ')'">{{d.name}}</text>
           </g>
         </svg>
@@ -36,7 +42,7 @@
       }
     },
     methods: {
-      showOutflowInflow(outflow, inflow){
+      showOutflowInflow(outflow, inflow) {
         this.showOutflow = outflow;
         this.showInflow = inflow;
         this.updateDisplay();
@@ -51,31 +57,31 @@
 
           // First sort by position
 
-          if(a.x < b.x) return -1;
-          if(a.x > b.x) return 1;
+          if (a.x < b.x) return -1;
+          if (a.x > b.x) return 1;
 
           // Next sort by biggest value
 
-          if(a.r < b.r) return 1;
-          if(a.r > b.r) return -1;
-          if(a.r === b.r) return 0;
+          if (a.r < b.r) return 1;
+          if (a.r > b.r) return -1;
+          if (a.r === b.r) return 0;
         });
       },
-      getOutflowData(){
+      getOutflowData() {
         const row = this.getFirstRow(this.outflowData);
         return this.computeRegionNodes(row, true);
       },
-      getInflowData(){
+      getInflowData() {
         const row = this.getFirstRow(this.inflowData);
         return this.computeRegionNodes(row, false);
       },
-      getFirstRow(data){
+      getFirstRow(data) {
 
         let row = [];
 
         data.some((dataRow) => {
 
-          if(dataRow[0].indexOf(`${this.year.toString().slice(-2)}`) !== -1){
+          if (dataRow[0].indexOf(`${this.year.toString().slice(-2)}`) !== -1) {
 
             row = dataRow;
             return true;
@@ -84,9 +90,9 @@
 
         return row;
       },
-      computeRegionNodes(row, outflow){
+      computeRegionNodes(row, outflow) {
 
-        const nodes= [];
+        const nodes = [];
 
         Object.keys(this.regions).forEach((region, index) => {
 
@@ -118,15 +124,15 @@
       year: function () {
         return this.$store.state.year;
       },
-      outflowData(){
+      outflowData() {
         return this.$store.state.outflowData.filter((row) => {
-          if(row.length < 2) return false;
+          if (row.length < 2) return false;
           return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
         });
       },
-      inflowData(){
+      inflowData() {
         return this.$store.state.inflowData.filter((row) => {
-          if(row.length < 2) return false;
+          if (row.length < 2) return false;
           return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
         });
       }
@@ -141,16 +147,16 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .data-group {
     cursor: pointer;
+
+    &:hover circle {
+      fill: #1e88e5;
+    }
   }
 
-  circle{
+  circle {
     transition: all 0.1s;
-  }
-
-  .data-group:hover circle{
-    fill: #1e88e5;
   }
 </style>
