@@ -8,6 +8,7 @@ const store = new Vuex.Store({
     year: 2007,
     timeChanged: 0,
     selectedRegion: '',
+    outflow: true,
     regions: {
       'Rest of the World': [
         'Sub-Saharan Africa',

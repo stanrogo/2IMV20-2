@@ -34,14 +34,20 @@
         regionTotals: {}
       }
     },
+    watch: {
+      outflow: function () {
+        this.updateDisplay();
+      }
+    },
     methods: {
       updateDisplay(){
         this.computeImmigrationPerRegion();
       },
       computeImmigrationPerRegion() {
+        const data = this.outflow ? this.outflowData : this.inflowData;
         const subRegionNames = this.regions[this.selectedRegion];
         const regionTotals = {};
-        const row = this.getFirstRow(this.inflowData);
+        const row = this.getFirstRow(data);
 
         subRegionNames.forEach((region) => {
           regionTotals[region] = parseInt(row[this.headers.indexOf(region)]);
@@ -69,6 +75,9 @@
       regions: function () {
         return this.$store.state.regions;
       },
+      outflow: function () {
+        return this.$store.state.outflow;
+      },
       selectedRegion: function () {
         return this.$store.state.selectedRegion;
       },
@@ -85,7 +94,7 @@
         });
       },
       outflowData(){
-        return this.$store.state.inflowData.filter((row) => {
+        return this.$store.state.outflowData.filter((row) => {
           if(row.length < 2) return false;
           return row[0].indexOf('Dec') !== -1;
         });
