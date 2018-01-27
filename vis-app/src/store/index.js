@@ -5,52 +5,44 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    fullYear: 2007.0,
     year: 2007,
-    startIndex: 0,
-    endIndex: 4,
-    quarter: -1,
-    quarterActive: false,
     timeChanged: 0,
-    selectedRegion: -1,
-    availableRegions: [
-      'Non-EEA Nationals',
-      'EEA Nationals',
-      'British Citizens',
-      'Other EEA and Swiss Nationals'
-    ],
+    selectedRegion: '',
+    regions: {
+      'Rest of the World': [
+        'Sub-Saharan Africa',
+        'North Africa',
+        'North America',
+        'Central and South America',
+        'Oceania',
+        'Other Europe'
+      ],
+      'Asia':[
+        'Middle East and Central Asia',
+        'East Asia',
+        'South Asia',
+        'South East Asia'
+      ],
+      'European Union': [
+        'European Union EU15',
+        'European Union EU8',
+        'European Union EU2',
+        'European Union Other'
+      ],
+      'British (Including Overseas Territories)': []
+    },
     currentTotalImmigration: 0,
+    inflowData: [],
+    outflowData: [],
+    dataHeaders: []
   },
   mutations: {
-    change_year(state, payLoad = state.fullYear) {
-
-      const quarter = state.quarterActive ? (Number((payLoad % 1).toFixed(2)) + 0.25) * 4 : -1;
-      const year = parseInt(payLoad);
-
-      // The first year is 2007 and has 4 quartiles
-
-      let  startIndex = (year - 2007) * 4;
-
-      if (quarter > -1) {
-
-        startIndex += quarter - 1;
-      }
-
-      const endIndex = quarter > -1 ? startIndex + 1 : startIndex + 4;
-
-      state.startIndex = startIndex;
-      state.endIndex = endIndex;
-      state.year = year;
-      state.quarter = quarter;
-      state.fullYear = payLoad;
+    change_year(state, payLoad) {
+      state.year = payLoad;
       state.timeChanged = + new Date();
     },
-    set_quarter_active(state, payLoad) {
-      state.quarterActive = payLoad;
-      store.commit('change_year');
-    },
     set_region(state, payLoad){
-      state.selectedRegion = state.availableRegions.indexOf(payLoad);
+      state.selectedRegion = payLoad;
     }
   }
 });

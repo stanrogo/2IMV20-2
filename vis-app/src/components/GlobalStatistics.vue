@@ -1,80 +1,156 @@
 <template>
-  <v-card>
-    <svg id="D3Container" width="100%" height="500">
-      <g v-for="(d, i) in nodes" :transform="'translate(' + d.x + ',' + d.y + ')'">
-        <circle :r="d.r" fill="#4DA6FF" v-on:click="goToRegion(d.name)"></circle>
-        <text text-anchor="middle">{{d.label}}</text>
-      </g>
-    </svg>
-  </v-card>
+  <v-layout row wrap>
+    <v-flex xs12 >
+      <v-card dark color="primary">
+        <v-card-title>
+          <h1 class="headline">Immigration figures to the UK per year</h1>
+        </v-card-title>
+        <v-card-text>Click on a node to explore further</v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex xs12>
+      <v-card>
+        <v-btn flat :color="showInflow && !showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(false, true)">Show Inflow Only</v-btn>
+        <v-btn flat :color="showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, true)">Show Both</v-btn>
+        <v-btn flat :color="!showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, false)">Show Outflow Only</v-btn>
+
+        <svg id="D3Container" width="100%" height="600">
+          <g v-for="(d, i) in nodes" :transform="'translate(' + d.x + ',' + d.y + ')'" class="data-group">
+            <circle :r="d.r" :fill="d.color" v-on:click="goToRegion(d.name)"></circle>
+            <text text-anchor="middle" fill="#212121" :transform="'translate(' + 0 + ',' + 4 + ')'">{{d.r}}K</text>
+            <text text-anchor="middle" :transform="'translate(' + 0 + ',' + d.y + ')'">{{d.name}}</text>
+          </g>
+        </svg>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
-  import ParseCSV from "../parseCSV";
-  import admissionsTotal from '../assets/datasets/admissions_total.csv';
-
   export default {
-    data () {
+    data() {
       return {
-        nodes: []
+        nodes: [],
+        showOutflow: false,
+        showInflow: true,
       }
     },
     methods: {
+      showOutflowInflow(outflow, inflow){
+        this.showOutflow = outflow;
+        this.showInflow = inflow;
+        this.updateDisplay();
+      },
       updateDisplay() {
+        const inflow = this.showInflow ? this.getInflowData() : [];
+        const outflow = this.showOutflow ? this.getOutflowData() : [];
 
-        ParseCSV.parseCSV(admissionsTotal).then(({headers, data}) => {
+        // Concat the two arrays together and
 
-          this.getData(data);
+        this.nodes = inflow.concat(outflow).sort((a, b) => {
+
+          // First sort by position
+
+          if(a.x < b.x) return -1;
+          if(a.x > b.x) return 1;
+
+          // Next sort by biggest value
+
+          if(a.r < b.r) return 1;
+          if(a.r > b.r) return -1;
+          if(a.r === b.r) return 0;
         });
       },
-      getData(data){
+      getOutflowData(){
+        const row = this.getFirstRow(this.outflowData);
+        return this.computeRegionNodes(row, true);
+      },
+      getInflowData(){
+        const row = this.getFirstRow(this.inflowData);
+        return this.computeRegionNodes(row, false);
+      },
+      getFirstRow(data){
 
-        // There are 4 regions available in total, each with their own name and total immigration figures
+        let row = [];
 
-        const regionTotals = [];
-        const nodes = [];
+        data.some((dataRow) => {
 
-        this.regions.forEach(region => regionTotals.push({name: region, total: 0}));
+          if(dataRow[0].indexOf(`${this.year.toString().slice(-2)}`) !== -1){
 
-        for (let i = this.startIndex; i < this.endIndex; i++) {
+            row = dataRow;
+            return true;
+          }
+        });
 
-          regionTotals.forEach((region, j) => region.total += Number(parseFloat(data[i][j + 2]).toFixed(2)));
-        }
+        return row;
+      },
+      computeRegionNodes(row, outflow){
 
-        regionTotals.forEach((region, index) => {
+        const nodes= [];
+
+        Object.keys(this.regions).forEach((region, index) => {
+
+          const total = parseInt(row[this.headers.indexOf(region)]);
 
           nodes.push({
-            "x": 300 * index + 150,
-            "y": 150,
-            "r": region.total,
-            "name": region.name,
-            "label": region.name
+            "x": 400 * index + 150,
+            "y": 250,
+            "r": total,
+            "name": region,
+            'color': outflow ? '#4DA6FF' : '#607D8B',
+            'outflow': outflow
           });
         });
 
-        this.nodes = nodes;
+        return nodes;
       },
-      goToRegion(regionName){
+      goToRegion(regionName) {
         this.$router.push('/regions/' + regionName);
       }
     },
     computed: {
       regions: function () {
-        return this.$store.state.availableRegions;
+        return this.$store.state.regions;
       },
-      startIndex: function () {
-        return this.$store.state.startIndex;
+      headers: function () {
+        return this.$store.state.dataHeaders;
       },
-      endIndex: function () {
-        return this.$store.state.endIndex;
+      year: function () {
+        return this.$store.state.year;
+      },
+      outflowData(){
+        return this.$store.state.outflowData.filter((row) => {
+          if(row.length < 2) return false;
+          return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
+        });
+      },
+      inflowData(){
+        return this.$store.state.inflowData.filter((row) => {
+          if(row.length < 2) return false;
+          return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
+        });
       }
     },
     created() {
       this.$store.watch(
-        (state) => state.timeChanged,
+        (state) => state.year,
         () => this.updateDisplay()
       );
       this.updateDisplay();
     }
   }
 </script>
+
+<style scoped>
+  .data-group {
+    cursor: pointer;
+  }
+
+  circle{
+    transition: all 0.1s;
+  }
+
+  .data-group:hover circle{
+    fill: #1e88e5;
+  }
+</style>

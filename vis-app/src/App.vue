@@ -1,24 +1,16 @@
 <template>
   <v-app>
-    <v-navigation-drawer persistent v-model="drawer" enable-resize-watcher fixed app>
-      <v-list>
-        <v-list-tile value="true" v-for="(item, i) in items" :key="i">
-          <v-list-tile-action>
-            <v-icon v-html="item.icon"/>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"/>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
     <v-toolbar app>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title v-text="title"/>
+      <v-btn icon class="hidden-xs-only" v-if="$route.name !== 'Home'" v-on:click="$router.go(-1)">
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
+      <v-toolbar-title>Immigration in the UK</v-toolbar-title>
     </v-toolbar>
     <v-content>
       <v-container fluid grid-list-md>
-        <router-view/>
+        <transition name="fade" mode="out-in">
+          <router-view/>
+        </transition>
         <range-slider/>
       </v-container>
     </v-content>
@@ -29,23 +21,39 @@
 
   import RangeSlider from "./components/RangeSlider";
 
+  import ParseCSV from "./parseCSV";
+  import inflow from './assets/datasets/world_migration_reasons.csv';
+  import outflow from './assets/datasets/world_migration_outflow.csv';
+
   export default {
     components: {RangeSlider},
     name: 'app',
-    data() {
-      return {
-        msg: 'Welcome to Your Vue.js App',
-        drawer: true,
-        items: [{
-          icon: 'bubble_chart',
-          title: 'Inspire'
-        }],
-        title: 'Immigration in the UK'
-      }
+    created() {
+
+      // On app creation, parse the necessary CSV files to make them available
+      // throughout the application
+
+      ParseCSV.parseCSV(inflow).then(({headers, data}) => {
+        this.$store.state.inflowData = data;
+        this.$store.state.dataHeaders = headers;
+      });
+
+      ParseCSV.parseCSV(outflow).then(({headers, data}) => {
+        this.$store.state.outflowData = data;
+      });
     }
   }
 </script>
 
 <style lang="scss">
 
+  // Styles are needed for router transitions to work
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0
+  }
 </style>
