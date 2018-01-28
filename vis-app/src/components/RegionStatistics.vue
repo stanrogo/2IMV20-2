@@ -137,6 +137,8 @@
 
     .switch-right {
       flex: 0 0 160px;
+      height: 21px;
+      margin-top: -10px;
     }
   }
 </style>

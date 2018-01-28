@@ -14,9 +14,16 @@
                 <text v-for="(total, name, index) in regionTotals" :x="(33 * (index  % 3) + 10) + '%'"
                       :y="240 * Math.floor(index  / 3) + 240">{{name}}
                 </text>
-                <circle v-for="(total, name, index) in regionTotals" :cx="(33 * (index  % 3) + 15) + '%'"
-                        :cy="240 * Math.floor(index  / 3) + 100"
-                        :r="total/1.5" fill="#4DA6FF"></circle>
+                <g v-for="(total, name, index) in regionTotals">
+                  <circle  :cx="(33 * (index  % 3) + 15) + '%'"
+                           :cy="240 * Math.floor(index  / 3) + 100"
+                           :r="total/1.5" fill="#4DA6FF"></circle>
+                  <text :x="(33 * (index  % 3) + 15) + '%'"
+                        :y="240 * Math.floor(index  / 3) + 100"
+                        text-anchor="middle" fill="#ffffff" :transform="'translate(' + 0 + ',' + ((total/1.5) * -1 + 20) + ')'">{{total}}K</text>
+                </g>
+
+
               </svg>
             </v-flex>
           </v-layout>
