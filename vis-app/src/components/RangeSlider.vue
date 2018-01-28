@@ -4,7 +4,7 @@
       Drag to see statistics based on a particular year
     </v-card-title>
     <v-card-text>
-      <v-slider :label="sliderLabel" v-model="year" thumb-label step="1" min="2007" max="2016" ticks/>
+      <v-slider :label="sliderLabel" v-model="year" thumb-label step="1" min="2007" max="2017" ticks/>
     </v-card-text>
   </v-card>
 </template>

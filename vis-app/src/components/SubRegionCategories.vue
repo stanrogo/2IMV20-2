@@ -97,7 +97,7 @@
       computeImmigrationReasons() {
         const data = this.outflow ? this.outflowData : this.inflowData;
         const reasonRows = data.filter((row) => {
-          return row[0].indexOf(`YE Dec ${this.year.toString().slice(-2)}`) !== -1;
+          return row[0].indexOf(`${this.year.toString().slice(-2)}`) !== -1;
         });
 
         const totals = {};
@@ -127,7 +127,7 @@
       computeImmigrationReasonsSubRegions() {
         const data = this.outflow ? this.outflowData : this.inflowData;
         const reasonRows = data.filter((row) => {
-          return row[0].indexOf(`YE Dec ${this.year.toString().slice(-2)}`) !== -1;
+          return row[0].indexOf(`${this.year.toString().slice(-2)}`) !== -1;
         });
 
         const totals = {};
@@ -190,13 +190,13 @@
       inflowData() {
         return this.$store.state.inflowData.filter((row) => {
           if (row.length < 2) return false;
-          return row[0].indexOf('Dec') !== -1;
+          return (row[0].indexOf('Dec') !== -1 || row[0].indexOf('Jun 17') !== -1);
         });
       },
       outflowData() {
         return this.$store.state.outflowData.filter((row) => {
           if (row.length < 2) return false;
-          return row[0].indexOf('Dec') !== -1;
+          return (row[0].indexOf('Dec') !== -1 || row[0].indexOf('Jun 17') !== -1);
         });
       },
       title() {

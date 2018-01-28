@@ -27,6 +27,10 @@
             <text text-anchor="middle" :transform="'translate(' + 0 + ',' + d.y + ')'">{{d.name}}</text>
           </g>
         </svg>
+
+        <v-card-text>
+          The total number of migrants this year was: {{globalTotal}}K.
+        </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
@@ -39,6 +43,9 @@
         nodes: [],
         showOutflow: false,
         showInflow: true,
+        globalTotalOutflow: 0,
+        globalTotalInflow: 0,
+        globalTotal: 0,
       }
     },
     methods: {
@@ -66,6 +73,14 @@
           if (a.r > b.r) return -1;
           if (a.r === b.r) return 0;
         });
+
+        this.computeTotal();
+      },
+      computeTotal(){
+
+        if(this.showInflow && !this.showOutflow) this.globalTotal = this.globalTotalInflow;
+        if(!this.showInflow && this.showOutflow) this.globalTotal = this.globalTotalOutflow;
+        if(this.showInflow && this.showOutflow) this.globalTotal = this.globalTotalInflow - this.globalTotalOutflow;
       },
       getOutflowData() {
         const row = this.getFirstRow(this.outflowData);
@@ -93,10 +108,12 @@
       computeRegionNodes(row, outflow) {
 
         const nodes = [];
+        let globalTotal = 0;
 
         Object.keys(this.regions).forEach((region, index) => {
 
           const total = parseInt(row[this.headers.indexOf(region)]);
+          globalTotal += total;
 
           nodes.push({
             "x": 400 * index + 150,
@@ -107,6 +124,9 @@
             'outflow': outflow
           });
         });
+
+        if(outflow) this.globalTotalOutflow = globalTotal;
+        if(!outflow) this.globalTotalInflow = globalTotal;
 
         return nodes;
       },
@@ -127,13 +147,13 @@
       outflowData() {
         return this.$store.state.outflowData.filter((row) => {
           if (row.length < 2) return false;
-          return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
+          return row[1].indexOf('All reasons') !== -1 && (row[0].indexOf('Dec') !== -1 || row[0].indexOf('Jun 17') !== -1);
         });
       },
       inflowData() {
         return this.$store.state.inflowData.filter((row) => {
           if (row.length < 2) return false;
-          return row[1].indexOf('All reasons') !== -1 && row[0].indexOf('Dec') !== -1;
+          return row[1].indexOf('All reasons') !== -1 && (row[0].indexOf('Dec') !== -1 || row[0].indexOf('Jun 17') !== -1);
         });
       }
     },
