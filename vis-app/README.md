@@ -5,14 +5,14 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
-npm install
+# Project setup
+yarn install
 
-# serve with hot reload at localhost:8080
-npm run dev
+# Compiles and hot-reloads for development
+yarn dev
 
-# build for production with minification
-npm run build
+# Compiles and minifies for production
+yarn build
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+For detailed explanation on how things work, see the [Configuration Reference](https://cli.vuejs.org/config/).

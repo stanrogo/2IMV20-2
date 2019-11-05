@@ -10,13 +10,13 @@
     </v-flex>
     <v-flex xs12>
       <v-card>
-        <v-btn flat :color="showInflow && !showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(false, true)">Show
+        <v-btn text :color="showInflow && !showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(false, true)">Show
           Inflow Only
         </v-btn>
-        <v-btn flat :color="showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, true)">Show
+        <v-btn text :color="showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, true)">Show
           Both
         </v-btn>
-        <v-btn flat :color="!showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, false)">Show
+        <v-btn text :color="!showInflow && showOutflow ? 'primary': ''" v-on:click="showOutflowInflow(true, false)">Show
           Outflow Only
         </v-btn>
 

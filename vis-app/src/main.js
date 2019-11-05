@@ -1,20 +1,18 @@
 import Vue from 'vue'
-import VueD3 from 'vue-d3'
-import Vuetify from 'vuetify'
-
 import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import '../node_modules/vuetify/dist/vuetify.min.css';
+import VueD3 from 'vue-d3'
+import vuetify from './plugins/vuetify';
 
-Vue.use(Vuetify);
+Vue.config.productionTip = false;
+
 Vue.use(VueD3);
 
 new Vue({
-  el: '#app',
   router,
   store,
-  components: {App},
-  template: '<App/>'
-});
+  vuetify,
+  render: h => h(App)
+}).$mount('#app');

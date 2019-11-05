@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <v-toolbar app>
+    <v-app-bar app>
       <v-btn icon class="hidden-xs-only" v-if="$route.name !== 'Home'" v-on:click="$router.go(-1)">
         <v-icon>arrow_back</v-icon>
       </v-btn>
       <v-toolbar-title>Immigration in the UK</v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <v-container fluid grid-list-md>
         <transition name="fade" mode="out-in">
@@ -44,16 +44,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-
-  // Styles are needed for router transitions to work
-
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s
-  }
-
-  .fade-enter, .fade-leave-to {
-    opacity: 0
-  }
-</style>
